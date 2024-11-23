@@ -1,8 +1,12 @@
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <filesystem>
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <thread>
 
 const std::string ascii_grayscale = " .:-=+*#%@";
 
@@ -13,12 +17,12 @@ cv::Mat convertToGray(const cv::Mat& image)
     return gray_image;
 }
 
-cv::Mat resizeImage(const cv::Mat& image, int width, int height) 
-{   
-    cv::Mat resize_image;
-    cv::resize(image, resize_image, cv::Size(width, height));
-    return resize_image;
-}
+// cv::Mat resizeImage(const cv::Mat& image, int width, int height) 
+// {   
+//     cv::Mat resize_image;
+//     cv::resize(image, resize_image, cv::Size(width, height));
+//     return resize_image;
+// }
 
 std::string convertToAscii(const cv::Mat& gray_image)
 {
@@ -30,6 +34,7 @@ std::string convertToAscii(const cv::Mat& gray_image)
             uchar pixel_value = gray_image.at<uchar>(i, j);
             int index = pixel_value * (ascii_grayscale.size() - 1) / 255;
             ascii_output += ascii_grayscale[index];
+            ascii_output += ' ';
         }
         ascii_output += '\n';   
     }
@@ -38,56 +43,47 @@ std::string convertToAscii(const cv::Mat& gray_image)
 
 int main()
 {   
-    cv::VideoCapture cap("images/vid.mp4");
-
-    // if(!cap.isOpened())
-    // {
-    //     std::cout << "Error opening video" << std::endl;
-    //     return -1;
-    // }
-
+    cv::VideoCapture capture("images/fff.mp4");
+    std::vector<std::string> videos;
     
     while(true)
     {
         cv::Mat frame;
-        cap >> frame;
+        capture >> frame;
 
         if (frame.empty())
         {
-            continue;
-        }
-
-        cv::Mat grayscale;
-        cv::cvtColor(frame, grayscale, cv::COLOR_BGR2GRAY);
-
-        cv::imshow("Frame", grayscale);
-
-        //ESC
-        char c=(char)cv::waitKey(25);
-        if(c == 27)
-        {
             break;
         }
+
+        cv::resize(frame, frame, cv::Size(64, 64));
+        cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
+
+        std::string ascii = convertToAscii(frame);
+        videos.push_back(ascii);
     }
 
-    cap.release();
-    cv::destroyAllWindows();
+    for(const auto flam : videos) 
+    {
+        std::cout << flam;
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    }
 
-    // std::filesystem::path image = "images/icon.jpg";
-    // cv::Mat img = cv::imread(image);
+
+    std::filesystem::path image = "images/icon.jpg";
+    cv::Mat img = cv::imread(image);
+
+    cv::resize(img, img, cv::Size(64, 64));
 
     // int width = 200;
     // int height = 100;
     // img = resizeImage(img, width, height);
 
-    // img = convertToGray(img);
+    img = convertToGray(img);
 
-    // std::string ascii_art = convertToAscii(img);
+    std::string ascii_art = convertToAscii(img);
 
-    // std::cout << ascii_art << std::endl;
-
-    // cv::imshow("_", img);
-    // cv::waitKey(0);
+    std::cout << ascii_art << std::endl;
 
     return 0;
 }
