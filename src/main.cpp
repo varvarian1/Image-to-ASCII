@@ -31,25 +31,60 @@ std::string convertToAscii(const cv::Mat& gray_image)
             int index = pixel_value * (ascii_grayscale.size() - 1) / 255;
             ascii_output += ascii_grayscale[index];
         }
-        ascii_output += '\n';
+        ascii_output += '\n';   
     }
     return ascii_output;
 }
 
 int main()
-{
-    std::filesystem::path image = "images/icon.jpg";
-    cv::Mat img = cv::imread(image);
+{   
+    cv::VideoCapture cap("images/vid.mp4");
 
-    int width = 300;
-    int height = 150;
-    img = resizeImage(img, width, height);
+    // if(!cap.isOpened())
+    // {
+    //     std::cout << "Error opening video" << std::endl;
+    //     return -1;
+    // }
 
-    img = convertToGray(img);
+    
+    while(true)
+    {
+        cv::Mat frame;
+        cap >> frame;
 
-    std::string ascii_art = convertToAscii(img);
+        if (frame.empty())
+        {
+            continue;
+        }
 
-    std::cout << ascii_art << std::endl;
+        cv::Mat grayscale;
+        cv::cvtColor(frame, grayscale, cv::COLOR_BGR2GRAY);
+
+        cv::imshow("Frame", grayscale);
+
+        //ESC
+        char c=(char)cv::waitKey(25);
+        if(c == 27)
+        {
+            break;
+        }
+    }
+
+    cap.release();
+    cv::destroyAllWindows();
+
+    // std::filesystem::path image = "images/icon.jpg";
+    // cv::Mat img = cv::imread(image);
+
+    // int width = 200;
+    // int height = 100;
+    // img = resizeImage(img, width, height);
+
+    // img = convertToGray(img);
+
+    // std::string ascii_art = convertToAscii(img);
+
+    // std::cout << ascii_art << std::endl;
 
     // cv::imshow("_", img);
     // cv::waitKey(0);
