@@ -54,16 +54,6 @@ int main()
         std::cout << i;
         std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
-    
-
-    std::filesystem::path image = "images/icon.jpg";
-    cv::Mat img = cv::imread(image);
-
-    cv::resize(img, img, cv::Size(64, 64));
-    cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
-
-    std::string ascii_art = convertToAscii(img);
-    std::cout << ascii_art << std::endl;
 
     return 0;
 }
