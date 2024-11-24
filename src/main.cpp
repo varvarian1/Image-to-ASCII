@@ -10,20 +10,6 @@
 
 const std::string ascii_grayscale = " .:-=+*#%@";
 
-cv::Mat convertToGray(const cv::Mat& image)
-{
-    cv::Mat gray_image;
-    cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
-    return gray_image;
-}
-
-// cv::Mat resizeImage(const cv::Mat& image, int width, int height) 
-// {   
-//     cv::Mat resize_image;
-//     cv::resize(image, resize_image, cv::Size(width, height));
-//     return resize_image;
-// }
-
 std::string convertToAscii(const cv::Mat& gray_image)
 {
     std::string ascii_output;
@@ -63,26 +49,20 @@ int main()
         videos.push_back(ascii);
     }
 
-    for(const auto flam : videos) 
+    for(const auto i : videos) 
     {
-        std::cout << flam;
+        std::cout << i;
         std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
-
+    
 
     std::filesystem::path image = "images/icon.jpg";
     cv::Mat img = cv::imread(image);
 
     cv::resize(img, img, cv::Size(64, 64));
-
-    // int width = 200;
-    // int height = 100;
-    // img = resizeImage(img, width, height);
-
-    img = convertToGray(img);
+    cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
 
     std::string ascii_art = convertToAscii(img);
-
     std::cout << ascii_art << std::endl;
 
     return 0;
